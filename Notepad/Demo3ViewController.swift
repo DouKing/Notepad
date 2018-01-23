@@ -24,5 +24,4 @@ class Demo3ViewController: UIViewController {
       })
       .disposed(by: disposeBag)
   }
-
 }

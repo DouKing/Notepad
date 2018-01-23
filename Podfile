@@ -6,7 +6,6 @@ target 'Notepad' do
   use_frameworks!
 
   # Pods for Notepad
-  pod 'Down'
   pod 'WCDB.swift'
   pod 'Alamofire'
   pod 'RxSwift'
