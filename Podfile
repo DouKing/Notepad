@@ -13,5 +13,6 @@ target 'Notepad' do
   pod 'Moya/RxSwift'
   pod 'SwiftyJSON'
   pod 'HandyJSON', '~> 4.0.0-beta.1'
+  pod 'R.swift'
   
 end
