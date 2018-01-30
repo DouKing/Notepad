@@ -8,8 +8,10 @@ import UIKit
 
 enum CellIdentifier: String {
   case alertCell
+  case alertHeaderCell
 }
 
 enum CellNibName: String {
   case AlertCell
+  case AlertHeaderCell
 }

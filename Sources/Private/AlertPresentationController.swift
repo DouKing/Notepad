@@ -19,10 +19,4 @@ class AlertPresentationController: Strom.PresentationController {
     return CGRect(origin: CGPoint(x: x, y: y), size: size)
   }
 
-  override var presentedView: UIView? {
-    let v = presentedViewController.view
-    v?.layer.cornerRadius = 15
-    v?.layer.masksToBounds = true
-    return v
-  }
 }

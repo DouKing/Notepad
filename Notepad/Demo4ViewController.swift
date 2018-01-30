@@ -13,7 +13,7 @@ class Demo4ViewController: UIViewController {
   }
 
   @IBAction func _alertAction() -> Void {
-    let alert = UIAlertController(title: "title", message: "message", preferredStyle: .actionSheet)
+    let alert = UIAlertController(title: "title", message: "message", preferredStyle: .alert)
     alert.addAction(UIAlertAction(title: "cancel", style: .cancel, handler: nil))
     let ok = UIAlertAction(title: "ok", style: .default, handler: nil)
     ok.isEnabled = false
@@ -22,15 +22,19 @@ class Demo4ViewController: UIViewController {
   }
 
   @IBAction func _cusAction() -> Void {
-    let alert = AlertController()
-    alert.add(action: AlertAction(title: "ok", style: .default))
-    alert.add(action: AlertAction(title: "cancel", style: .cancel))
-    alert.add(action: AlertAction(title: "oo", style: .destructive, handler: { action in
+    let alert = AlertController(title: "title", message: "message", style: .alert)
+    alert.addAction(AlertAction(title: "ok", style: .default))
+    alert.addAction(AlertAction(title: "cancel", style: .cancel))
+    alert.addAction(AlertAction(title: "oo", style: .destructive, handler: { action in
       print(action.title ?? "null")
     }))
     let aa = AlertAction(title: "aa", style: .default)
     aa.isEnable = false
-    alert.add(action: aa)
+    alert.addAction(aa)
+
+//    alert.addTextField()
+//    alert.addTextField()
+
     self.present(alert, animated: true, completion: nil)
   }
 }
