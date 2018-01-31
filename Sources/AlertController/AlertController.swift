@@ -116,10 +116,14 @@ open class AlertController: UIViewController {
 
   private(set) var textFields: [UITextField]?
   func addTextField(configurationHandler: ((UITextField) -> Swift.Void)? = nil) {
+    if style == .actionSheet {
+      fatalError("text field only support for alert style")
+    }
     if textFields == nil {
       textFields = []
     }
     let textField = UITextField()
+    textField.backgroundColor = .white
     if let cf = configurationHandler {
       cf(textField)
     }
@@ -129,8 +133,9 @@ open class AlertController: UIViewController {
   //MARK: - Private Methods
 
   private let actionHeight: CGFloat = 44
-  private let textFieldHeight: CGFloat = 44
+  private let textFieldHeight: CGFloat = 30
   private let seperatorHeight: CGFloat = 1 / UIScreen.main.scale
+  private let placeholderHeight: CGFloat = 15
 
   private lazy var contentView: UIView = {
     let v = UIView()
@@ -148,6 +153,7 @@ open class AlertController: UIViewController {
     let fl = UICollectionViewFlowLayout()
     fl.minimumLineSpacing = 0
     fl.minimumInteritemSpacing = 0
+    fl.sectionInset = .zero
     let cv = UICollectionView(frame: .zero, collectionViewLayout: fl)
     cv.delegate = self
     cv.dataSource = self
@@ -156,6 +162,10 @@ open class AlertController: UIViewController {
                 forCellWithReuseIdentifier: CellIdentifier.alertCell.rawValue)
     cv.register(UINib(nibName: CellNibName.AlertHeaderCell.rawValue, bundle: nil),
                 forCellWithReuseIdentifier: CellIdentifier.alertHeaderCell.rawValue)
+    cv.register(UINib(nibName: CellNibName.AlertTextFieldCell.rawValue, bundle: nil),
+                forCellWithReuseIdentifier: CellIdentifier.alertTextFieldCell.rawValue)
+    cv.register(UINib(nibName: CellNibName.AlertCell.rawValue, bundle: nil),
+                forCellWithReuseIdentifier: CellIdentifier.alertPlaceholderCell.rawValue)
     return cv
   }()
 
@@ -212,14 +222,25 @@ open class AlertController: UIViewController {
     resetDataSource()
   }
 
+  private var placeholders: [AlertPlaceholder]?
   private var dataSource: [[AlertSection]] = []
   private func resetDataSource() {
     dataSource = []
+    placeholders = []
     if let hds = headerDataSource {
       dataSource.append(hds)
     }
+    if dataSource.count <= 0 {
+      let plh = AlertPlaceholder()
+      placeholders!.append(plh)
+      dataSource.append([plh])
+    }
     if let textFields = self.textFields, textFields.count > 0 {
       dataSource.append(textFields)
+
+      let plh = AlertPlaceholder()
+      placeholders!.append(plh)
+      dataSource.append([plh])
     }
     if actions.count > 0 {
       dataSource.append(actions)
@@ -241,6 +262,10 @@ open class AlertController: UIViewController {
 
     if textFields != nil && textFields!.count > 0 {
       height += CGFloat(textFields!.count) * textFieldHeight
+    }
+
+    if let placeholders = self.placeholders, placeholders.count > 0 {
+      height += CGFloat(placeholders.count) * placeholderHeight
     }
 
     if actions.count > 0 {
@@ -283,11 +308,15 @@ extension AlertController: UICollectionViewDataSource, UICollectionViewDelegateF
       cell.titleLabel.attributedText = item as? NSAttributedString
       return cell
     case .textField:
-      let cell = collectionView.dequeueReusableCell(withReuseIdentifier: CellIdentifier.alertCell.rawValue, for: indexPath) as! AlertCell
+      let cell = collectionView.dequeueReusableCell(withReuseIdentifier: CellIdentifier.alertTextFieldCell.rawValue, for: indexPath) as! AlertTextFieldCell
+      cell.textField = item as? UITextField
       return cell
     case .action:
       let cell = collectionView.dequeueReusableCell(withReuseIdentifier: CellIdentifier.alertCell.rawValue, for: indexPath) as! AlertCell
       cell.setup(action: actions[indexPath.item])
+      return cell
+    case .placeholder:
+      let cell = collectionView.dequeueReusableCell(withReuseIdentifier: CellIdentifier.alertPlaceholderCell.rawValue, for: indexPath) as! AlertCell
       return cell
     }
   }
@@ -297,6 +326,7 @@ extension AlertController: UICollectionViewDataSource, UICollectionViewDelegateF
     if let handler = action.handler {
       handler(action)
     }
+    view.endEditing(true)
     presentingViewController?.dismiss(animated: true, completion: nil)
 
     collectionView.deselectItem(at: indexPath, animated: true)
@@ -329,6 +359,8 @@ extension AlertController: UICollectionViewDataSource, UICollectionViewDelegateF
       return CGSize(width: width, height: AlertHeaderCell.height(with: item as? NSAttributedString, maxWidth: preferredContentSize.width))
     case .textField:
       return CGSize(width: width, height: textFieldHeight)
+    case .placeholder:
+      return CGSize(width: width, height: placeholderHeight)
     }
   }
 
@@ -388,6 +420,7 @@ enum AlertSectionType {
   case header
   case textField
   case action
+  case placeholder
 }
 
 extension NSAttributedString: AlertSection {
@@ -405,5 +438,11 @@ extension UITextField: AlertSection {
 extension AlertAction: AlertSection {
   var type: AlertSectionType {
     return .action
+  }
+}
+
+class AlertPlaceholder: AlertSection {
+  var type: AlertSectionType {
+    return .placeholder
   }
 }

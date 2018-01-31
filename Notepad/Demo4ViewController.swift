@@ -15,9 +15,15 @@ class Demo4ViewController: UIViewController {
   @IBAction func _alertAction() -> Void {
     let alert = UIAlertController(title: "title", message: "message", preferredStyle: .alert)
     alert.addAction(UIAlertAction(title: "cancel", style: .cancel, handler: nil))
+    alert.addAction(UIAlertAction(title: "qqq", style: .default, handler: nil))
+    alert.addAction(UIAlertAction(title: "www", style: .destructive, handler: nil))
     let ok = UIAlertAction(title: "ok", style: .default, handler: nil)
     ok.isEnabled = false
     alert.addAction(ok)
+
+    alert.addTextField(configurationHandler: nil)
+    alert.addTextField(configurationHandler: nil)
+
     present(alert, animated: true, completion: nil)
   }
 
@@ -32,8 +38,8 @@ class Demo4ViewController: UIViewController {
     aa.isEnable = false
     alert.addAction(aa)
 
-//    alert.addTextField()
-//    alert.addTextField()
+    alert.addTextField()
+    alert.addTextField()
 
     self.present(alert, animated: true, completion: nil)
   }

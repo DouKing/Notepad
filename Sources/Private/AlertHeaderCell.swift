@@ -20,9 +20,4 @@ class AlertHeaderCell: UICollectionViewCell {
     return max(bounds.size.height + 30, 60)
   }
 
-  override func awakeFromNib() {
-        super.awakeFromNib()
-        // Initialization code
-    }
-
 }
